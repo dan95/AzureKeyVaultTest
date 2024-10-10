@@ -1,4 +1,5 @@
 ﻿using Azure.Identity;
+using AzureKeyVaultTest;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -45,29 +46,3 @@ hostBuilder.ConfigureServices(x =>
 var app = hostBuilder.Build();
 
 await app.RunAsync();
-
-public class Service : IHostedService
-{
-    private readonly IConfiguration _configuration;
-    private readonly ILogger<Service> _logger;
-    public Service(
-        ILogger<Service> logger,
-        IConfiguration configuration
-        )
-    {
-        _logger = logger;
-        _configuration = configuration;
-    }
-
-    public async Task StartAsync(CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("App started");
-        await Task.CompletedTask;
-    }
-
-    public async Task StopAsync(CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("App stopped");
-        await Task.CompletedTask;
-    }
-}
