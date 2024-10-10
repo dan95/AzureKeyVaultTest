@@ -1,10 +1,10 @@
 ﻿using Azure.Identity;
-using AzureKeyVaultTest;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using AzureKeyVaultTestCommon;
 
 var hostBuilder = new HostBuilder();
 
@@ -20,28 +20,20 @@ hostBuilder.ConfigureLogging(x =>
 hostBuilder.ConfigureAppConfiguration(x =>
 {
     x.AddJsonFile("appsettings.json", false, reloadOnChange: true);
-
     var config = x.Build();
 
-    x.AddAzureAppConfiguration(options =>
-    {
-        options.Connect(config.GetConnectionString("AppConfig"));
-        options.ConfigureKeyVault(kv =>
-        {
-            kv.SetCredential(new ClientSecretCredential(
-                tenantId: config.GetValue<string>("SecretConfiguration:TenantId"),
-                clientId: config.GetValue<string>("SecretConfiguration:ClientId"),
-                clientSecret: config.GetValue<string>("SecretConfiguration:Secret")
-            ));
-        });
-    });
+    //Adiciona o Azure KeyVault diretamente aos configuration providers
+    //x.AddAzureKeyVaultDirectly(config);
+
+    //Adiciona a App Configuration aos configuration providers junto ao resolver
+    //para que seja possível ler os valores referenciados em um Azure KeyVault
+    x.AddAzureAppConfigurationWithKeyVaultReference(config);
 });
 
 hostBuilder.ConfigureServices(x =>
 {
     x.AddHostedService<Service>();
 });
-
 
 var app = hostBuilder.Build();
 
