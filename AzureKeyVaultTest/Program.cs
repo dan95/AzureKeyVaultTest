@@ -48,7 +48,7 @@ await app.RunAsync();
 
 public class Service : IHostedService
 {
-    private IConfiguration _configuration;
+    private readonly IConfiguration _configuration;
     private readonly ILogger<Service> _logger;
     public Service(
         ILogger<Service> logger,
